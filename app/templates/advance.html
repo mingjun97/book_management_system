@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>高级搜索</title>
+    <style>
+        .flex {
+            display: flex;
+            flex-direction: column;
+            margin: -8px;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .flex .cell {
+            display: flex;
+        }
+        .flex .cell .background {
+            background: url("static/background.png");
+            width: 100vw;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+        .flex .cell .background .box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: auto;
+        }
+        .flex .cell .background .box .input{
+            margin-top: 20px;
+            transition: all 1s ease;
+            border: solid 2px #1E88E5;
+            background-color: #3676a1;
+            outline: none;
+            font-size: 15px;
+            width: 300px;
+            padding: 5px;
+            color: #fff;
+        }
+        .flex .cell .background .box .input:focus{
+            transition: all 1s ease;
+            border: solid 2px #00897B;
+            background-color: #26A69A;
+            outline: none;
+        }
+        .flex .cell .background .box .button{
+            margin-top: 40px;
+            transition: all 1s ease;
+            outline: none;
+            border: solid 2px #1E88E5;
+            background-color: #039BE5;
+            color: #fff;
+            font-size: 15px;
+            padding: 10px;
+            width: 100px;
+            border-radius: 30px;
+            margin-bottom: 20px;
+        }
+        .flex .cell .background .box .button:hover{
+            outline: none;
+            border: solid 2px #2196F3;
+            background-color: #03A9F4;
+        }
+        .flex .cell .background .box .button:active{
+            transition: all 0.5s ease;
+            outline: none;
+            border: solid 2px #1966a3;
+            background-color: #025c85;
+        }
+        body{
+            background: -webkit-gradient(linear,  right top, left bottom, from(#828383), to(#d5d5d5));
+        }
+        input::-webkit-input-placeholder{
+            color: #f2f2f2;
+        }
+        a, a:hover, a:visited{
+            color: inherit;
+            text-decoration: inherit;
+        }
+    </style>
+</head>
+<body>
+ <div class="flex">
+    <div class="cell">
+        <div class="background">
+            <div class="box" style="font-size: 40px; color: #fff; font-family: 'PingFang SC';">高级搜索</div>
+            <div style="position: absolute; margin-left: 15px; margin-top: 15px; font-size: 17px; color: #fff; left: 10px;">
+                <a href="{{ url_for("app.view.index") }}">主页</a>
+            </div>
+            <div class="box">
+                <form class="box" action="{{ url_for("app.view.advance_result") }}">
+                    <input name="name" class="input" placeholder="书名"/>
+                    <input name="type" class="input" placeholder="类别"/>
+                    <input name="author" class="input" placeholder="作者"/>
+                    <input name="publisher" class="input" placeholder="出版社"/>
+                    <input name="year" class="input" placeholder="年份"/>
+                    <input name="price" class="input" placeholder="价格"/>
+                    <div style="color: #ffffff;">排序字段：
+                        <select name="order">
+                        <option value ="1">书名</option>
+                        <option value ="2">类别</option>
+                        <option value="3">作者</option>
+                        <option value="4">出版社</option>
+                        <option value="5">年份</option>
+                        <option value="6">价格</option>
+                    </select></div>
+                    <button class="button" >GO</button>
+                </form>
+            </div>
+        </div>
+    </div>
+ </div>
+</body>
+</html>

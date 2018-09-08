@@ -1,0 +1,59 @@
+{% macro pagination_widget(pagination, endpoint) %}
+<style>
+    .page-box{
+        position: absolute;
+        left: 100vw;
+        transform: translateX(-100%) translateX(-25px);
+        margin-top: 50px;
+        background-color: white;
+        box-shadow: 0px 0px 10px 3px #888888;
+        width: 30px;
+        display: flex;
+        flex-direction: column;
+    }
+    .page-box .normal{
+        font-size: 20px;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        transition: all 0.5s ease-out;
+        background-color: rgba(0, 0, 0, 0);
+    }
+    .page-box .normal:hover{
+        background-color: rgba(0, 0, 0, 0.16);
+    }
+    .page-box .disabled{
+        font-size: 20px;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        background-color: rgba(118,119,122,0.47) ;
+    }
+    .page-box .normal .fill{
+
+    }
+</style>
+
+
+    <div class="page-box">
+
+<a {% if not pagination.has_prev %} class="disabled" {% else %} class="normal" {% endif %}  {% if pagination.has_prev %} href="{{ url_for(endpoint,
+page = pagination.page - 1, **request.args) }}" {% endif %}>
+«
+</a>
+{% for p in pagination.iter_pages() %}
+{% if p %}
+    <a class="normal" {% if p == pagination.page %} style="background-color: rgba(102, 160, 106, 0.17);" {% else %} href="{{ url_for(endpoint, page = p, **request.args) }}" {% endif %} >{{ p }}</a>
+{% else %}
+    <div class="disabled"><a href="#">…</a></div>
+{% endif %}
+{% endfor %}
+<a  {% if not pagination.has_next %} class="disabled" {% else %} class="normal" {% endif %} {% if pagination.has_next %}href="{{ url_for(endpoint,
+page = pagination.page + 1, **request.args) }}"{% endif %}>
+»
+</a>
+</div>
+</div>
+{% endmacro %}

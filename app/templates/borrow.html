@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>图书借还</title>
+    <style>
+        .flex {
+            display: flex;
+            flex-direction: column;
+            margin: -8px;
+            position: absolute;
+        }
+        .flex .cell {
+            display: flex;
+        }
+        .flex .cell .background {
+            background: url("static/background.png");
+            width: 100vw;
+            height: 24vh;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            z-index: 10;
+        }
+        .flex .cell .background .box {
+            display: flex;
+            align-items: center;
+            margin: auto;
+        }
+        .flex .cell .background .box .input{
+            margin-top: 20px;
+            transition: all 1s ease;
+            border: solid 2px #1E88E5;
+            margin-right: 10px;
+            background-color: #3676a1;
+            outline: none;
+            font-size: 15px;
+            width: 200px;
+            padding: 10px;
+            color: #fff;
+        }
+        .flex .cell .background .box .input:focus{
+            transition: all 1s ease;
+            border: solid 2px #00897B;
+            background-color: #26A69A;
+            outline: none;
+        }
+        .flex .cell .background .box .button{
+            margin-top: 20px;
+            transition: all 1s ease;
+            outline: none;
+            border: solid 2px #1E88E5;
+            background-color: #039BE5;
+            color: #fff;
+            font-size: 15px;
+            padding: 10px;
+            width: 100px;
+        }
+        .flex .cell .background .box .button:hover{
+            outline: none;
+            border: solid 2px #2196F3;
+            background-color: #03A9F4;
+        }
+        .flex .cell .background .box .button:active{
+            transition: all 0.5s ease;
+            outline: none;
+            border: solid 2px #1966a3;
+            background-color: #025c85;
+        }
+        .table{
+            margin-left: auto;
+            margin-right: auto;
+            width: 80vw;
+            max-width: 800px;
+            margin-top: -1px;
+            background-color: #fff;
+            padding: 5px;
+            box-shadow: 0px 0px 10px 3px #888888;
+            margin-bottom: 100px;
+            z-index: 0;
+            transition: all 0.5s ease;
+        }
+        thead{
+            border-bottom: solid 1px rgba(0, 0, 0, 0.5);
+        }
+        td {
+            border-top: solid 1px rgba(12, 12, 12, 0.34);
+        }
+        tr {
+            height: 40px;
+        }
+        body{
+            background: -webkit-gradient(linear,  right top, left bottom, from(#a7a8a8), to(#d5d5d5));
+        }
+        input::-webkit-input-placeholder{
+            color: #f2f2f2;
+        }
+        a, a:hover, a:visited{
+            color: inherit;
+            text-decoration: inherit;
+        }
+        .message{
+            position: absolute;
+            transition: all 1s ease;
+            opacity: 0;
+            top: 50vh;
+            left: 50vw;
+            z-index: 100;
+            transform: translate(-50%, -50%);
+            background-color: #3276e0d4;
+            border-radius: 20px;
+            padding: 25px 80px;
+            border: solid 1px black;
+            color: white;
+        }
+    </style>
+    <script type="text/javascript" src="static/EnableReady.js"></script>
+    <script>
+        document.ready(function () {
+            try{
+                document.getElementById("table").style.transform= "translateY(-110%)";
+            setTimeout(function () {
+                document.getElementById("table").style.transform="translateY(0%)";
+            }, 300);
+            }catch (TypeError){
+                                console.log('no table');
+
+            }
+            try{
+                    document.getElementsByClassName("message")[0].style.opacity = 0;
+                setTimeout(function () {
+                    document.getElementsByClassName("message")[0].style.opacity = 1;
+                    setTimeout(function () {
+                        document.getElementsByClassName("message")[0].style.opacity = 0;
+                    }, 3000);
+                }, 300);
+            }catch (TypeError) {
+                console.log('no message');
+            }
+        });
+    </script>
+</head>
+<body>
+{% if message %}
+    <div class="message">
+        {{ message }}
+    </div>
+{% endif %}
+     <div class="flex">
+        <div class="cell">
+            <div class="background">
+                <div style="position: absolute; margin-left: 15px; margin-top: 15px; font-size: 17px; color: #fff; left: 10px;">
+                    <a href="{{ url_for("app.view.index") }}">主页</a>
+                </div>
+                <div class="box" style="font-size: 40px; color: #fff; font-family: 'PingFang SC'; flex-direction: column;">图书借还
+                {% if reader %}
+                    <div style="color: #efc179;font-size: 16px;display: flex;flex-direction: column;">
+                        <div>借书证编号：{{ reader["id"] }}</div>
+                        <div>姓名： {{ reader["name"] }}</div>
+                        <div>单位： {{ reader["department"] }}</div>
+                        <div>类型： {{ reader["type"] }}</div>
+                                        <button onclick="window.location = '{{ url_for("app.view.borrow") }}';">返回</button>
+                    </div>
+                {% endif %}
+                </div>
+                {% if not reader %}
+                    <form class="box">
+                        <input name="reader_id" class="input" placeholder="借书证编号" value="{{ reader_id }}"/>
+                        <button class="button" >查询</button>
+                    </form>
+                {% endif %}
+                {% if reader %}
+                <form class="box" action="{{ url_for("app.view.exec_borrow") }}" method="post" style="margin-top: -20px;">
+                    <input name="user" type="hidden" value="{{ reader["id"] }}">
+                    <input name="book_id" class="input" placeholder="图书编号"/>
+                    <div style="    color: white;margin-top: 20px;margin-right: 10px;">
+                        <label><input name="exec" type="radio" value="1" checked />借</label>
+                        <label><input name="exec" type="radio" value="2" />还</label>
+                    </div>
+                    <button class="button" >执行</button>
+                </form>
+                {% endif %}
+                <div style="position: absolute; margin-top: 20px; font-size: 17px; color: #fff; left: 100vw; transform: translateX(-100%) translateX(-15px); ">
+                    <a style="white-space: nowrap;" href="{{ url_for("app.view.manage") }}"> 欢迎您，{{ current_user.name }}</a>
+                </div>
+            </div>
+        </div>
+        <div class="cell">
+            {% if result_set and result_set.__length__ != 0 %}
+                <div id="table" style="transform: translateY(-110%);" class="table">
+                <div style="    text-align: center;font-size: 30px;font-family: monospace;">借阅记录</div>
+                <table style="width: 100%" cellpadding="0" cellspacing="0">
+                    <thead>
+                    <tr style="text-align: center;border-bottom: solid 1px rgba(0,0,0,0.32); color: #b2b2b2">
+                        <td style="border-bottom: inherit; border-top: none;">
+                            书号
+                        </td>
+                        <td style="border-bottom: inherit; border-top: none;">
+                            类别
+                        </td>
+                        <td style="border-bottom: inherit; border-top: none;">
+                            书名
+                        </td>
+                         <td style="border-bottom: inherit; border-top: none;">
+                            出版社
+                        </td>
+                        <td style="border-bottom: inherit; border-top: none;">
+                            年份
+                        </td>
+                        <td style="border-bottom: inherit; border-top: none;">
+                            作者
+                        </td>
+                        <td style="border-bottom: inherit; border-top: none;">
+                            价格
+                        </td>
+                        <td style="border-bottom: inherit; border-top: none;">
+                            总藏书量
+                        </td>
+                        <td style="border-bottom: inherit; border-top: none;">
+                            库存
+                        </td>
+                        <td style="border-bottom: inherit; border-top: none;">
+                            借出日期
+                        </td>
+                        <td style="border-bottom: inherit; border-top: none;">
+                            经手人
+                        </td>
+                         <td style="border-bottom: inherit; border-top: none;">
+                            操作
+                        </td>
+                    </tr>
+                    </thead>
+                    <tbody style="text-align: center">
+                        {% for i in result_set %}
+                        <tr >
+                            <td>
+                                {{ i["id"] }}
+                            </td>
+                            <td>
+                                {{ i["type"] }}
+                            </td>
+                            <td>
+                                {{ i["name"] }}
+                            </td>
+                            <td>
+                                {{ i["publisher"] }}
+                            </td>
+                            <td>
+                                {{ i["year"] }}
+                            </td>
+                            <td>
+                                {{ i["author"] }}
+                            </td>
+                            <td>
+                                {{ i["price"] }}
+                            </td>
+                            <td>
+                                {{ i["amount"] }}
+                            </td>
+                            <td>
+                                {{ i["store"] }}
+                            </td>
+                            <td>
+                                {{ i["borrow"] }}
+                            </td>
+                            <td>
+                                {{ i["admin"] }}
+                            </td>
+                            <td>
+                                {% if i['return'] %}
+                                    <button>已于{{ i['date'] }}归还</button>
+                                {% else %}
+                                <form action="{{ url_for("app.view.exec_borrow") }}" method="post">
+                                    <input type="hidden" name="book_id" value="{{ i["id"] }}">
+                                    <input type="hidden" name="user" value="{{ reader["id"] }}">
+                                    <input type="hidden" name="exec" value="2">
+                                    <button>还书</button>
+                                </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+            {% elif not reader %}
+                <div style="text-align: center; margin: auto; color: #636363; font-size: 40px; margin-top: 30px; font-style: italic;" >
+                                输入借书证编号
+                </div>
+            {% else %}
+                <div style="text-align: center; margin: auto; color: #636363; font-size: 40px; margin-top: 30px; font-style: italic;" >
+                                没有借阅未还记录
+                </div>
+            {% endif %}
+        </div>
+     </div>
+</body>
+</html>

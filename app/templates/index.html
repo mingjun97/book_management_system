@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>图书管理系统</title>
+    <style>
+        .flex {
+            display: flex;
+            flex-direction: column;
+            margin: -8px;
+        }
+        .flex .cell {
+            display: flex;
+        }
+        .flex .cell .background {
+            background: url("static/background.png");
+            width: 100vw;
+            height: 60vh;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+        .flex .cell .background .box {
+            display: flex;
+            flex-direction: row;
+            height: 40px;
+            margin: auto;
+        }
+        .flex .cell .background .box .input{
+            margin-right: 10px;
+            transition: all 1s ease;
+            border: solid 2px #1E88E5;
+            background-color: #3676a1;
+            outline: none;
+            font-size: 15px;
+            padding: 20px;
+            width: 350px;
+            color: #fff;
+        }
+        .flex .cell .background .box .input:focus{
+            margin-right: 10px;
+            transition: all 1s ease;
+            border: solid 2px #00897B;
+            background-color: #26A69A;
+            outline: none;
+        }
+        .flex .cell .background .box .button{
+            margin-top: 2px;
+            transition: all 1s ease;
+            outline: none;
+            border: solid 2px #1E88E5;
+            background-color: #039BE5;
+            color: #fff;
+            font-size: 15px;
+            padding: 10px;
+            width: 100px;
+        }
+        .flex .cell .background .box .button:hover{
+            outline: none;
+            border: solid 2px #2196F3;
+            background-color: #03A9F4;
+        }
+        .flex .cell .background .box .button:active{
+            transition: all 0.5s ease;
+            outline: none;
+            border: solid 2px #1966a3;
+            background-color: #025c85;
+        }
+        .flex .cell .follow{
+            height: 40vh;
+            width: 100vw;
+            background: -webkit-gradient(linear,  right top, left bottom, from(#d5d6d6), to(#ffffff));
+            display: flex;
+            align-items: center;
+        }
+        .flex .cell .follow .bottom{
+            width: 100vw;
+            position: absolute;
+            top: 100%;
+            margin-top: -20px;
+            text-align: center;
+            color: rgba(69, 73, 72, 0.62);
+        }
+        .flex .cell .follow .container{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: auto;
+        }
+        .flex .cell .follow .container .large{
+            color:#039BE5;
+            font-size: 30px;
+            margin: 2px;
+        }
+        input::-webkit-input-placeholder{
+            color: #f2f2f2;
+        }
+        a, a:hover, a:visited{
+            color: inherit;
+            text-decoration: inherit;
+        }
+    </style>
+</head>
+<body style="font-family: 'PingFang SC'; overflow: hidden">
+ <div class="flex">
+    <div class="cell">
+        <div class="background">
+            <div class="box" style="font-size: 50px; color: #fff; font-family: 'PingFang SC';">图书管理系统</div>
+            <form class="box" action="/result">
+                <input name="name" class="input" placeholder="输入要查询的书名"/>
+                <button class="button" >查询</button>
+            </form>
+            <a style="color: #fff; margin-top: -70px; margin-bottom: 40px;" href="{{ url_for('app.view.advance') }}"> 高级搜索 </a>
+        </div>
+        <div style="position: absolute; transform: translateX(-100%) translateX(-20px); margin-top: 15px; font-size: 17px; color: #fff; left: 100vw;">
+           {% if current_user.is_authenticated %}
+                <a style="white-space: nowrap" href="{{ url_for("app.view.manage") }}" >欢迎您&nbsp;&nbsp;{{ current_user.name }}</a>
+            {% else %}
+            <a  style="white-space: nowrap" href="{{ url_for('app.view.login') }}">登录</a>
+            {% endif %}
+        </div>
+    </div>
+     <div class="cell">
+        <div class="follow">
+         <div class="container" style="margin-right: 10px;">
+             <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24"><path d="M13 12h7v1.5h-7zm0-2.5h7V11h-7zm0 5h7V16h-7zM21 4H3c-1.1 0-2 .9-2 2v13c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 15h-9V6h9v13z"/></svg>
+             <div>书库类目<span class="large" >{{book_kinds}}</span>种</div>
+         </div>
+         <div class="container">
+             <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24"><path d="M20 13H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-6c0-.55-.45-1-1-1zM7 19c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM20 3H4c-.55 0-1 .45-1 1v6c0 .55.45 1 1 1h16c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1zM7 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
+             <div>在馆图书<span class="large" >{{book_stored}}</span>册</div>
+         </div>
+        <div class="container" style="margin-left: 10px;">
+             <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24"><path d="M5 17h14v2H5zm7-12L5.33 15h13.34z"/></svg>
+            <div>已借出<span class="large" >{{book_lent}}</span>册</div>
+         </div>
+        <div class="bottom">
+            Copyright by xxx, 2018
+        </div>
+        </div>
+
+     </div>
+ </div>
+</body>
+</html>

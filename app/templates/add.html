@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>高级搜索</title>
+    <style>
+        .flex {
+            display: flex;
+            flex-direction: column;
+            margin: -8px;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .flex .cell {
+            display: flex;
+        }
+        .flex .cell .background {
+            background: url("static/background.png");
+            width: 100vw;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            transition: all 1s ease;
+        }
+        .flex .cell .background .box {
+            transition: all 1s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: auto;
+        }
+        .flex .cell .background .box .input{
+            margin-top: 20px;
+            transition: all 1s ease;
+            border: solid 2px #1E88E5;
+            background-color: #3676a1;
+            outline: none;
+            font-size: 15px;
+            width: 300px;
+            padding: 5px;
+            color: #fff;
+        }
+        .flex .cell .background .box .input:focus{
+            transition: all 1s ease;
+            border: solid 2px #00897B;
+            background-color: #26A69A;
+            outline: none;
+        }
+        .flex .cell .background .box .button{
+            margin-top: 40px;
+            transition: all 1s ease;
+            outline: none;
+            border: solid 2px #1E88E5;
+            background-color: #039BE5;
+            color: #fff;
+            font-size: 15px;
+            padding: 10px;
+            width: 100px;
+            border-radius: 30px;
+            margin-bottom: 20px;
+        }
+        .flex .cell .background .box .button:hover{
+            outline: none;
+            border: solid 2px #2196F3;
+            background-color: #03A9F4;
+        }
+        .flex .cell .background .box .button:active{
+            transition: all 0.5s ease;
+            outline: none;
+            border: solid 2px #1966a3;
+            background-color: #025c85;
+        }
+        body{
+            background: -webkit-gradient(linear,  right top, left bottom, from(#828383), to(#d5d5d5));
+        }
+        input::-webkit-input-placeholder{
+            color: #f2f2f2;
+        }
+        a, a:hover, a:visited{
+            color: white;
+            text-decoration: inherit;
+        }
+        .warn{
+            border-radius: 4px;
+            background-color: #ff8686e8;
+            border: solid 1px #ffffff;
+            padding-top: 15px;
+            padding-bottom: 15px;
+            width: 310px;
+            text-align: center;
+        }
+        .collect{
+            transition: all 0.5s ease;
+            overflow: hidden;
+            align-items: center;
+            max-height: 1000px;
+        }
+    </style>
+</head>
+<body>
+ <div class="flex">
+    <div class="cell">
+        <div class="background">
+            <div style="position: absolute; transform: translateX(-100%) translateX(-20px); margin-top: 15px; font-size: 17px; color: #fff; left: 100vw;">
+           {% if current_user.is_authenticated %}
+                <a style="white-space: nowrap" href="{{ url_for("app.view.manage") }}" >欢迎您&nbsp;&nbsp;{{ current_user.name }}</a>
+            {% endif %}
+            </div>
+            <div style="position: absolute; margin-left: 15px; margin-top: 15px; font-size: 17px; color: #fff; left: 10px;">
+                <a href="{{ url_for("app.view.index") }}">主页</a>
+            </div>
+            <div class="box" style="font-size: 40px; color: #fff; font-family: 'PingFang SC'; margin-top: 50px;">书籍入库</div>
+            <div class="box">
+                {% if message %}
+                    <div class="warn">{{ message }}</div>
+                {% endif %}
+
+                <div id="collect" class="collect">
+                    <form class="box" action="{{ url_for("app.view.add") }}" method="post" id="single">
+                        <input name="id" class="input" placeholder="书号">
+                        <input name="type" class="input" placeholder="类别"/>
+                        <input name="name" class="input" placeholder="书名"/>
+                        <input name="publisher" class="input" placeholder="出版社"/>
+                        <input name="year" class="input" placeholder="年份"/>
+                        <input name="author" class="input" placeholder="作者"/>
+                        <input name="price" class="input" placeholder="价格"/>
+                        <input name="amount" class="input" placeholder="数量"/>
+                        <button class="button" >入库</button>
+                    </form>
+                    <form class="box" action="{{ url_for("app.view.batch_add") }}" method="post" enctype="multipart/form-data" id="batch" style="display: none;" >
+                    <div class="input" style="align-items: center;position: relative;text-align: center;" onchange="
+                    document.getElementById('tips').innerHTML = document.getElementsByName('file')[0].value.split('\\').pop();
+">
+                        <input name="file" type="file" accept=".csv" placeholder="请上传文件" style="opacity: 0; height: 100%; width: 100%; position: absolute" onchange="">
+                        <svg style="fill: #a0e1ff;" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+                        <br/><div id="tips">拖拽文件至此或点击上传</div>
+                    </div>
+                    <button class="button" >提交</button>
+                </form>
+                </div>
+
+                <div style="margin-top: -10px; margin-bottom: 10px"><a onclick="
+                    var single = document.getElementById('single');
+                    var batch = document.getElementById('batch');
+                    var collect = document.getElementById('collect');
+                    if (document.getElementById('bu').innerHTML==='批量入库') {
+{#                        if(collect.style.height = collect.clientHeight) {#}
+{#                             collect.style.height = 0;#}
+{#                        }#}
+                        collect.style.maxHeight='0px';
+                          setTimeout(function() {
+                            batch.style.display='';
+                            single.style.display='none';
+                            collect.style.maxHeight = '1000px';
+                            document.getElementById('bu').innerHTML='单本入库';
+                          },500);
+                    }else{
+{#                          if(collect.style.height = collect.clientHeight) {#}
+{#                             collect.style.height = 0;#}
+{#                        }#}
+                        collect.style.maxHeight='0px';
+                          setTimeout(function() {
+                            single.style.display='';
+                            batch.style.display='none';
+                            collect.style.maxHeight = '1000px';
+                            document.getElementById('bu').innerHTML='批量入库';
+                          },500);
+                    }
+" id="bu" href="#">批量入库</a></div>
+            </div>
+        </div>
+    </div>
+ </div>
+</body>
+</html>
